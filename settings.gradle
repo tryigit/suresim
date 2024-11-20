@@ -13,5 +13,5 @@ dependencyResolutionManagement {
         maven { url "https://api.xposed.info/" }
     }
 }
-rootProject.name = "Suresim_cleverestech"
+rootProject.name = 'suresim'
 include ':app'
