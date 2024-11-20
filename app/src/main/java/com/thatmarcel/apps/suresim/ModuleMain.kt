@@ -1,4 +1,4 @@
-package com.thatmarcel.apps.suresim
+package com.cleverestech.apps.suresim
 
 import android.annotation.SuppressLint
 import android.app.Application
