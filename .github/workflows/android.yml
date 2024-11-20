@@ -18,7 +18,7 @@ jobs:
         submodules: "recursive"
         fetch-depth: 0
 
-    - name: set up JDK 17
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
@@ -30,10 +30,10 @@ jobs:
     - name: Clean Gradle cache
       run: |
         rm -rf ~/.gradle/caches
-      
+
     - name: Build with Gradle
-      run: ./gradlew assembleRelease
-      
+      run: ./gradlew assembleRelease -b app/build.gradle
+
     - name: Upload app-release.apk
       uses: actions/upload-artifact@v4
       with:
