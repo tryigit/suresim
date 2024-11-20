@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'es.chiteroman.bootloaderspoofer'
+    namespace 'com.cleverestech.apps.suresim'
     compileSdk 35
     buildToolsVersion '35.0.0'
 
@@ -14,7 +14,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "es.chiteroman.bootloaderspoofer"
+        applicationId "com.cleverestech.apps.suresim"
         minSdk 26
         targetSdk 35
         versionCode 40
