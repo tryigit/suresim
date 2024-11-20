@@ -14,6 +14,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class ModuleMain implements IXposedHookLoadPackage {
     private static Application application;
+    private static ClipboardManager clipboardManager;
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
@@ -25,6 +26,7 @@ public class ModuleMain implements IXposedHookLoadPackage {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 application = (Application) param.thisObject;
+                clipboardManager = (ClipboardManager) application.getSystemService(Context.CLIPBOARD_SERVICE);
             }
         });
 
@@ -39,7 +41,7 @@ public class ModuleMain implements IXposedHookLoadPackage {
             @SuppressLint("DiscouragedPrivateApi")
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                if (application == null) {
+                if (application == null || clipboardManager == null) {
                     return;
                 }
 
@@ -48,9 +50,9 @@ public class ModuleMain implements IXposedHookLoadPackage {
                     return;
                 }
 
-                ClipboardManager clipboardManager = (ClipboardManager) application.getSystemService(Context.CLIPBOARD_SERVICE);
-                if (clipboardManager != null) {
-                    ClipData clip = ClipData.newPlainText("Encoded eSIM activation code", subscription.getEncodedActivationCode());
+                String activationCode = subscription.getEncodedActivationCode();
+                if (activationCode != null) {
+                    ClipData clip = ClipData.newPlainText("Encoded eSIM activation code", activationCode);
                     clipboardManager.setPrimaryClip(clip);
                 }
             }
