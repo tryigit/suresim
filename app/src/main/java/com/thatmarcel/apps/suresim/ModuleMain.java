@@ -23,8 +23,6 @@ public class ModuleMain implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        Log.d(TAG, "Module loaded for package: " + lpparam.packageName);
-
         XposedHelpers.findAndHookMethod(Application.class, "onCreate", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
