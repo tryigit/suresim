@@ -27,22 +27,14 @@ public class ModuleMain implements IXposedHookLoadPackage {
     @Override
     @SuppressLint("NewApi")
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        XSharedPreferences prefs = new XSharedPreferences(MODULE_PACKAGE_NAME);
-
-        Set<String> targetPackages = prefs.getStringSet("target_packages", null);
-        if (targetPackages == null || targetPackages.isEmpty()) {
-            targetPackages = new HashSet<>(Arrays.asList(
-                    "com.android.settings",
-                    "com.miui.euicc",
-                    "com.google.android.euicc"
-            ));
-        }
-
-        if (!targetPackages.contains(lpparam.packageName)) {
-            return;
-        }
-
-        Log.d(TAG, "Module loaded for package: " + lpparam.packageName);
+        XposedHelpers.findAndHookMethod(Application.class, "onCreate", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                application = (Application) param.thisObject;
+                clipboardManager = (ClipboardManager) application.getSystemService(Context.CLIPBOARD_SERVICE);
+                Log.d(TAG, "Application onCreate hooked");
+            }
+        });
 
         XposedHelpers.findAndHookMethod(EuiccManager.class, "isEnabled", new XC_MethodHook() {
             @Override
