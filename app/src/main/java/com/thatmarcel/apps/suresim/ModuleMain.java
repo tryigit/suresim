@@ -10,19 +10,40 @@ import android.telephony.euicc.EuiccManager;
 import android.util.Log;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class ModuleMain implements IXposedHookLoadPackage {
     private static final String TAG = "SureSimModule";
+    private static final String MODULE_PACKAGE_NAME = "com.cleverestech.apps.suresim";
     private static Application application;
     private static ClipboardManager clipboardManager;
 
     @Override
+    @SuppressLint("NewApi")
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
+        XSharedPreferences prefs = new XSharedPreferences(MODULE_PACKAGE_NAME);
+
+        Set<String> targetPackages = prefs.getStringSet("target_packages", null);
+        if (targetPackages == null || targetPackages.isEmpty()) {
+            targetPackages = new HashSet<>(Arrays.asList(
+                    "com.android.settings",
+                    "com.miui.euicc",
+                    "com.google.android.euicc"
+            ));
+        }
+
+        if (!targetPackages.contains(lpparam.packageName)) {
+            return;
+        }
+
         Log.d(TAG, "Module loaded for package: " + lpparam.packageName);
 
         XposedHelpers.findAndHookMethod(Application.class, "onCreate", new XC_MethodHook() {
