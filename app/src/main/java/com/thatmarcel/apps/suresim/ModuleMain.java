@@ -1,6 +1,7 @@
 package com.cleverestech.apps.suresim;
 
 import android.annotation.SuppressLint;
+import android.app.AndroidAppHelper;
 import android.app.Application;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -22,9 +23,6 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class ModuleMain implements IXposedHookLoadPackage {
     private static final String TAG = "SureSimModule";
-    private static final String MODULE_PACKAGE_NAME = "com.cleverestech.apps.suresim";
-    private static Application application;
-    private static ClipboardManager clipboardManager;
 
     @Override
     @SuppressLint("NewApi")
@@ -46,15 +44,6 @@ public class ModuleMain implements IXposedHookLoadPackage {
 
         Log.d(TAG, "Module loaded for package: " + lpparam.packageName);
 
-        XposedHelpers.findAndHookMethod(Application.class, "onCreate", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                application = (Application) param.thisObject;
-                clipboardManager = (ClipboardManager) application.getSystemService(Context.CLIPBOARD_SERVICE);
-                Log.d(TAG, "Application onCreate hooked");
-            }
-        });
-
         XposedHelpers.findAndHookMethod(EuiccManager.class, "isEnabled", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -73,8 +62,15 @@ public class ModuleMain implements IXposedHookLoadPackage {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Log.d(TAG, "DownloadableSubscription.getEncodedActivationCode hooked");
 
-                if (application == null || clipboardManager == null) {
-                    Log.e(TAG, "Application or ClipboardManager is null");
+                Application application = AndroidAppHelper.currentApplication();
+                if (application == null) {
+                    Log.e(TAG, "Application is null");
+                    return;
+                }
+
+                ClipboardManager clipboardManager = (ClipboardManager) application.getSystemService(Context.CLIPBOARD_SERVICE);
+                if (clipboardManager == null) {
+                    Log.e(TAG, "ClipboardManager is null");
                     return;
                 }
 
