@@ -23,6 +23,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class ModuleMain implements IXposedHookLoadPackage {
     private static final String TAG = "SureSimModule";
+    private Application application;
+    private ClipboardManager clipboardManager;
 
     @Override
     @SuppressLint("NewApi")
