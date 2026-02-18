@@ -41,9 +41,13 @@ public class ModuleMain implements IXposedHookLoadPackage {
         XposedHelpers.findAndHookMethod(EuiccManager.class, "isEnabled", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                Log.d(TAG, "EuiccManager.isEnabled hooked - original result: " + param.getResult());
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "EuiccManager.isEnabled hooked - original result: " + param.getResult());
+                }
                 param.setResult(true);
-                Log.d(TAG, "EuiccManager.isEnabled - result set to true");
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "EuiccManager.isEnabled - result set to true");
+                }
             }
         });
 
