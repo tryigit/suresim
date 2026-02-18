@@ -76,11 +76,24 @@ public class ModuleMain implements IXposedHookLoadPackage {
                 Log.d(TAG, "Encoded activation code: " + activationCode);
 
                 if (activationCode != null) {
-                    ClipData clip = ClipData.newPlainText("Encoded eSIM activation code", activationCode);
-                    clipboardManager.setPrimaryClip(clip);
-                    Log.d(TAG, "Activation code copied to clipboard");
+                    copyToClipboard(clipboardManager, activationCode);
                 }
             }
         });
+    }
+
+    public static void copyToClipboard(ClipboardManager clipboardManager, String activationCode) {
+        ClipData currentClip = clipboardManager.getPrimaryClip();
+        if (currentClip != null && currentClip.getItemCount() > 0) {
+            CharSequence currentText = currentClip.getItemAt(0).getText();
+            if (currentText != null && currentText.toString().equals(activationCode)) {
+                Log.d(TAG, "Activation code already in clipboard, skipping update");
+                return;
+            }
+        }
+
+        ClipData clip = ClipData.newPlainText("Encoded eSIM activation code", activationCode);
+        clipboardManager.setPrimaryClip(clip);
+        Log.d(TAG, "Activation code copied to clipboard");
     }
 }
