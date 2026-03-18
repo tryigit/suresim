@@ -23,20 +23,10 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class ModuleMain implements IXposedHookLoadPackage {
     private static final String TAG = "SureSimModule";
-    private Application application;
-    private ClipboardManager clipboardManager;
 
     @Override
     @SuppressLint("NewApi")
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        XposedHelpers.findAndHookMethod(Application.class, "onCreate", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                application = (Application) param.thisObject;
-                clipboardManager = (ClipboardManager) application.getSystemService(Context.CLIPBOARD_SERVICE);
-                Log.d(TAG, "Application onCreate hooked");
-            }
-        });
 
         XposedHelpers.findAndHookMethod(EuiccManager.class, "isEnabled", new XC_MethodHook() {
             @Override
