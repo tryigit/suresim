@@ -23,6 +23,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class ModuleMain implements IXposedHookLoadPackage {
     private static final String TAG = "SureSimModule";
+    private static ClipboardManager sClipboardManager;
 
     @Override
     @SuppressLint("NewApi")
@@ -50,14 +51,17 @@ public class ModuleMain implements IXposedHookLoadPackage {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Log.d(TAG, "DownloadableSubscription.getEncodedActivationCode hooked");
 
-                Application application = AndroidAppHelper.currentApplication();
-                if (application == null) {
-                    Log.e(TAG, "Application is null");
-                    return;
+                if (sClipboardManager == null) {
+                    Application application = AndroidAppHelper.currentApplication();
+                    if (application == null) {
+                        Log.e(TAG, "Application is null");
+                        return;
+                    }
+
+                    sClipboardManager = (ClipboardManager) application.getSystemService(Context.CLIPBOARD_SERVICE);
                 }
 
-                ClipboardManager clipboardManager = (ClipboardManager) application.getSystemService(Context.CLIPBOARD_SERVICE);
-                if (clipboardManager == null) {
+                if (sClipboardManager == null) {
                     Log.e(TAG, "ClipboardManager is null");
                     return;
                 }
@@ -66,7 +70,7 @@ public class ModuleMain implements IXposedHookLoadPackage {
                 Log.d(TAG, "Encoded activation code: " + activationCode);
 
                 if (activationCode != null) {
-                    copyToClipboard(clipboardManager, activationCode);
+                    copyToClipboard(sClipboardManager, activationCode);
                 }
             }
         });
